@@ -1,0 +1,62 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:8.0.27
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'coin32'
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_USER: django
+      MYSQL_PASSWORD: admin12345
+    volumes:
+      - .dbdata:/var/lib/mysql
+  
+  redis:
+    image: redis:alpine
+    container_name: redis
+    environment:
+      - REDIS_HOST=redis
+    ports:
+      - "6380:6379"
+
+  app:
+    build: .
+    volumes:
+      - .:/coin32 
+    ports:
+      - 8000:8000
+    image: app:coin32
+    container_name: coin32_container
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db 
+
+
+  # Celery
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: django_celery_example_celery_worker
+    command: celery -A core.celery worker -l info -Q clearing_database
+    volumes:
+      - .:/coin32
+    env_file:
+      - ./.env
+    depends_on:
+      - redis
+      - db
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: django_celery_example_celery_beat
+    command: celery -A core.celery beat
+    volumes:
+      - .:/coin32
+    env_file:
+      - ./.env
+    depends_on:
+      - redis
+      - db
