@@ -3,7 +3,7 @@
 ==================
 | Для запуска используется docker-compose version 1.29.2
 |
-| 1 Скопировать репозиторий $ git clone https://github.com/fl4kee/Coin32 && cd Coin32/backend
+| 1 Скопировать репозиторий $ git clone https://github.com/fl4kee/Coin32 && cd Coin32
 |
 | 2 Произвести миграции $ docker-compose run app python manage.py migrate
 |  
