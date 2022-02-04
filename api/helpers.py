@@ -43,7 +43,6 @@ def update_current_cache(request: Request, url: Url) -> None:
         {"long_url": url.long_url, "short_url": url.short_url, "id": url.id}
     )
     cache.set(request.session.session_key, current_cache, CACHE_TTL)
-    logger.info(f" Ссылка {url.short_url} добавлена в кеш")
 
 
 def cache_url(request: Request, url: Url) -> None:
